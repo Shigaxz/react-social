@@ -1,0 +1,25 @@
+.navbar{
+    background-color: #0047AB;
+    border-bottom: 1px solid #000000;
+    align-items: center;
+    display: flex;
+    height: 70px;
+}
+.navbar h1{
+    align-items: center;
+    color: rgb(255, 255, 255);
+    text-shadow: -1px -1px 0 #000,
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
+    padding-left: 10px;
+}
+.login {
+    position: absolute;
+    right: 0px;
+    padding-right: 10px;
+}
+.login h2{
+    color: rgb(255, 255, 255);
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}

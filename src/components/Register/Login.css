@@ -1,0 +1,64 @@
+.log {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-image: url("/public/background.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; 
+  }
+  
+  .ti-l {
+    color: #000000;
+    margin-bottom: 20px;
+    justify-content: center;
+    display: flex;
+  }
+  
+  .form-l {
+    background: #A7C7E7;
+    opacity: .8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+  }
+  
+  .lbl-l {
+    color: black;
+    display: block;
+    margin-bottom: 15px;
+  }
+  
+  .inp-l {
+    color: #000000;
+    width: 100%;
+    margin-top: 5px;
+    font-size: 18px;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #000000;
+  }
+  
+  .btn-l {
+    opacity: 1;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .btn-l:hover {
+    transition: 1s;
+    background-color: #000000;
+  }
+  
