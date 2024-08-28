@@ -7,9 +7,9 @@ function ShowHide() {
         setShow(!show);
     }
   return (
-    <div>
+    <div className='registerpage'>
         <button className="show" onClick={handleClick}>{show ? "Ocultar" : "Mostrar"}</button>
-        {show && <h2 className="mostrar">HIDE ME</h2>}
+        {show ? <h2 className="mostrar">HIDE ME</h2> : <h1>SA</h1>}
     </div>
   )
 }

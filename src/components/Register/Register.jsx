@@ -24,7 +24,7 @@ function Register() {
       };
     
   return (
-      <div className="reg">
+      <>
         <form onSubmit={handleSubmit} className='form-r'>
         <h1 className='ti-r'>Regístrate</h1>
           <label className='lbl-r'>
@@ -69,7 +69,7 @@ function Register() {
           </label>
           <button className='btn-r' type="submit">Registrar</button>
         </form>
-      </div>
+      </>
     );
 }
 

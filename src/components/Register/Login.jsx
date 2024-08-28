@@ -22,7 +22,7 @@ function Login() {
       };
     
   return (
-      <div className="log">
+      <>
         <form onSubmit={handleSubmit} className='form-r'>
         <h1 className='ti-l'>Inicia sesión</h1>
           <label className='lbl-l'>
@@ -47,7 +47,7 @@ function Login() {
           </label>
           <button className='btn-l' type="submit">Iniciar</button>
         </form>
-      </div>
+      </>
     );
 }
 
