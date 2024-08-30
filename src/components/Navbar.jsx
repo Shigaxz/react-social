@@ -12,7 +12,7 @@ function Navbar() {
           </Link>
         </div>
         <div className="login">
-          <Link to="register">
+          <Link to="/register">
           <h2>Iniciar sesion</h2>
           </Link>
         </div>

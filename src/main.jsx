@@ -5,8 +5,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import App from './App.jsx'
 import Register from './views/Register.jsx'
 import './index.css'
-import Product from './views/Product.jsx'
-import productos from './data/productos'
 
 const rutas = [
   {
@@ -18,13 +16,6 @@ const rutas = [
     element: <Register />
   }
 ];
-
-productos.forEach((producto) => {
-  rutas.push({
-    path: producto.id,
-    element: <Product producto={producto}/>
-  });
-});
 
 const router = createBrowserRouter(rutas);
 
