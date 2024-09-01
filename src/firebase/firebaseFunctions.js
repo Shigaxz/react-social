@@ -1,4 +1,4 @@
-import { collection, addDoc, doc, updateDoc, deleteDoc, getDocs, getDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, deleteDoc, getDocs, getDoc, getFirestore, query, where } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 
 export const addDocument = async (collectionName, data) => {
@@ -57,4 +57,23 @@ export const getDocumentById = async (collectionName, id) => {
       console.error("error: ", e);
       throw e;
     }
+};
+
+export const getUserByEmail = async (email) => {
+  const usersRef = collection(db, 'user');
+  const q = query(usersRef, where('email', '==', email));
+
+  try {
+    const querySnapshot = await getDocs(q);
+    let userData = null;
+
+    querySnapshot.forEach((doc) => {
+      userData = { id: doc.id, ...doc.data() };
+    });
+
+    return userData;
+  } catch (error) {
+    console.error("Error obteniendo usuario por email: ", error);
+    return null;
+  }
 };

@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-image: url("/public/background.jpg");
+    background-image: url("/background.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -15,6 +15,7 @@
   .ti-l {
     color: #000000;
     margin-bottom: 20px;
+    font-family: "Lucida Console", "Courier New", monospace;
     justify-content: center;
     display: flex;
   }
@@ -30,12 +31,14 @@
   }
   
   .lbl-l {
+    font-family: "Lucida Console", "Courier New", monospace;
     color: black;
     display: block;
     margin-bottom: 15px;
   }
   
   .inp-l {
+    font-family: "Lucida Console", "Courier New", monospace;
     color: #000000;
     width: 100%;
     margin-top: 5px;
@@ -47,6 +50,7 @@
   }
   
   .btn-l {
+    font-family: "Lucida Console", "Courier New", monospace;
     opacity: 1;
     background-color: #007bff;
     color: white;

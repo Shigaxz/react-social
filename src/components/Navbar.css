@@ -4,6 +4,7 @@
     align-items: center;
     display: flex;
     height: 70px;
+    font-family: "Lucida Console", "Courier New", monospace;
 }
 .navbar h1{
     align-items: center;
@@ -13,13 +14,25 @@
                 -1px 1px 0 #000,
                 1px 1px 0 #000;
     padding-left: 10px;
+    font-size: 30px;
 }
 .login {
     position: absolute;
     right: 0px;
     padding-right: 10px;
+    font-size: 25px;
 }
 .login h2{
     color: rgb(255, 255, 255);
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+.logout{
+    border: 1px solid #000000;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    border-radius: 8px;
+    padding: 5px;
+}
+span{
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    margin: 10px;
 }
