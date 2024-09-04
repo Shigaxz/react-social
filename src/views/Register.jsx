@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import Navbar from '../components/Navbar'
-import Register from '../components/Register/Register'
-import Login from '../components/Register/Login'
+import React, { useState } from 'react';
+import Navbar from '../components/Navbar';
+import Register from '../components/Register/Register';
+import Login from '../components/Register/Login';
 
 import './Register.css'
 

@@ -14,7 +14,6 @@ const Navbar = () => {
         try {
           const user = await getUserByEmail(currentUser.email);
           setUserData(user);
-          console.log("Usuario encontrado:", user);
         } catch (error) {
           console.error("Error obteniendo el usuario:", error);
         }
@@ -22,7 +21,7 @@ const Navbar = () => {
     };
 
     fetchUser();
-  }, [currentUser]); // Dependencia: se vuelve a ejecutar cuando currentUser cambia
+  }, [currentUser]);
 
   const handleLogout = () => {
     logout();

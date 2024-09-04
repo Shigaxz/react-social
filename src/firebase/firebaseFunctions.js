@@ -1,5 +1,6 @@
 import { collection, addDoc, doc, updateDoc, deleteDoc, getDocs, getDoc, getFirestore, query, where } from 'firebase/firestore';
-import { db } from './firebaseConfig';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from './firebaseConfig';
 
 export const addDocument = async (collectionName, data) => {
     try {
@@ -75,5 +76,28 @@ export const getUserByEmail = async (email) => {
   } catch (error) {
     console.error("Error obteniendo usuario por email: ", error);
     return null;
+  }
+};
+
+export const editProfile = async (userId, updatedData, file) => {
+  try {
+    let photoURL = null;
+
+    if (file) {
+      const storageRef = ref(storage, `profilePictures/${file.name}`);
+      await uploadBytes(storageRef, file);
+      photoURL = await getDownloadURL(storageRef);
+    }
+
+    const updatedUserData = {
+      ...updatedData,
+      photoURL
+    };
+
+    const userDocRef = doc(db, 'user', userId);
+    await updateDoc(userDocRef, updatedUserData);
+  } catch (error) {
+    console.error("Error al actualizar el usuario:", error);
+    throw error;
   }
 };

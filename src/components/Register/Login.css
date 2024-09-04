@@ -18,6 +18,7 @@
     font-family: "Lucida Console", "Courier New", monospace;
     justify-content: center;
     display: flex;
+    font-size: 20px;
   }
   
   .form-l {

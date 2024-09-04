@@ -1,6 +1,6 @@
 import { useAuth } from './components/AuthContext';
-import Navbar from './components/Navbar'
-import './App.css'
+import Navbar from './components/Navbar';
+import './App.css';
 
 function App() {
   const { currentUser } = useAuth();

@@ -1,0 +1,22 @@
+.edit-profile{
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.edit-profile h1{
+    font-size: 20px;
+}
+.edit-profile label{
+    font-size: 17px;
+}
+.input-text{
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #ffffff;
+}

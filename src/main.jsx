@@ -7,7 +7,7 @@ import Register from './views/Register.jsx'
 import MyProfile from './views/MyProfile.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import './index.css'
-import './output.css'
+
 
 const rutas = [
   {
