@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../components/AuthContext";
 import { getUserByEmail } from "../firebase/firebaseFunctions";
+import MakePost from "../components/MainComponents/MakePost";
 import Modal from "../Modal";
 import EditProfile from "../components/EditProfile";
 import Navbar from "../components/Navbar";
@@ -18,13 +19,11 @@ const MyProfile = () => {
         try {
           const user = await getUserByEmail(currentUser.email);
           setUserData(user);
-          console.log("Usuario encontrado:", user);
         } catch (error) {
           console.error("Error obteniendo el usuario:", error);
         }
       }
     };
-
     fetchUser();
   }, [currentUser]);
 
@@ -35,7 +34,9 @@ const MyProfile = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
+  if (!userData) {
+    return <div>Cargando...</div>;
+  }
   return (
     <>
       <Navbar />
@@ -47,7 +48,8 @@ const MyProfile = () => {
           <button className="edit ml-9 p-1" onClick={openModal}>Editar Perfil</button>
           <Modal isOpen={isModalOpen} onClose={closeModal}>
             <EditProfile user={userData}/>
-          </Modal>
+          </Modal >
+          <MakePost userId={userData}/>
         </div>
         <div className="pf-cont row-span-5 col-start-5">3</div>
       </div>

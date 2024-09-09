@@ -117,3 +117,28 @@ export const editProfile = async (userId, updatedData) => {
     throw error;
   }
 };
+
+export const uploadPost = async (userId, postText, photo) => {
+  try {
+    let photoURL = null;
+
+    if (photo) {
+      const storageRef = ref(storage, `posts/${photo.name}`);
+      await uploadBytes(storageRef, photo);
+      photoURL = await getDownloadURL(storageRef);
+    }
+    const postDay = new Date();
+    const formattedDate = postDay.toISOString().split('T')[0];
+
+    const postRef = collection(db, 'posts');
+    await addDoc(postRef, {
+      userId,
+      text: postText,
+      photo: photoURL,
+      createdAt: formattedDate,
+    });
+  } catch (error) {
+    console.error("Error al subir el post con foto:", error);
+    throw error;
+  }
+};
