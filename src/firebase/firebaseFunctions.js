@@ -79,25 +79,41 @@ export const getUserByEmail = async (email) => {
   }
 };
 
-export const editProfile = async (userId, updatedData, file) => {
+export const editProfilePhoto = async (userId, updatedData, file) => {
   try {
-    let photoURL = null;
+    const userDocRef = doc(db, 'user', userId);
 
-    if (file) {
+    let photoURL = null;
+    // Si no se actualiza la foto recibe un null
+    if (file !== null) {
       const storageRef = ref(storage, `profilePictures/${file.name}`);
       await uploadBytes(storageRef, file);
       photoURL = await getDownloadURL(storageRef);
+
+      const updatedUserData = {
+        ...updatedData,
+        photoURL,
+      };
+      await updateDoc(userDocRef, updatedUserData);
     }
-
-    const updatedUserData = {
-      ...updatedData,
-      photoURL
-    };
-
-    const userDocRef = doc(db, 'user', userId);
-    await updateDoc(userDocRef, updatedUserData);
+    /* Si recibe null deberia actualizar los otros datos, no photoURL
+    if (file === null) {
+      await updateDoc(userDocRef, updatedData);
+    }
+    */
   } catch (error) {
     console.error("Error al actualizar el usuario:", error);
+    throw error;
+  }
+};
+
+export const editProfile = async (userId, updatedData) => {
+  try {
+    const userDocRef = doc(db, 'user', userId);
+    await updateDoc(userDocRef, updatedData);
+    
+  } catch (error) {
+    console.error("Error al actualizar los datos del perfil:", error);
     throw error;
   }
 };

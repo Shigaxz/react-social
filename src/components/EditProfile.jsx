@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { editProfile } from "../firebase/firebaseFunctions";
+import { editProfile, editProfilePhoto } from "../firebase/firebaseFunctions";
 import './EditProfile.css'
 function EditProfile({ user }) {
   const [nombre, setNombre] = useState("");
@@ -11,14 +11,20 @@ function EditProfile({ user }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const updatedData = {
+      nombre: nombre.trim() === "" ? user.nombre : nombre,
+      apellido: apellido.trim() === "" ? user.apellido : apellido,
+      biography: biography.trim() === "" ? user.biography : biography,
+      
+    };
     try {
-      const updatedData = {
-        nombre,
-        apellido,
-        biography,
-      };
-
-      await editProfile(user.id , updatedData, photo);
+      if (photo !== null) {
+        await editProfilePhoto(user.id, updatedData, photo);
+      } else {
+        await editProfile(user.id, updatedData);
+      }
+      const photoToUpload = photo ? photo : user.photoURL;
+      await editProfile(user.id , updatedData, photoToUpload);
       setSuccess(true);
     } catch (error) {
       setError(error.message);
@@ -35,7 +41,6 @@ function EditProfile({ user }) {
           value={nombre}
           placeholder={user.nombre}
           onChange={(e) => setNombre(e.target.value)}
-          required
         />
       </label>
       <label>
@@ -45,7 +50,6 @@ function EditProfile({ user }) {
           value={apellido}
           placeholder={user.apellido}
           onChange={(e) => setApellido(e.target.value)}
-          required
         />
       </label>
       <label>

@@ -21,7 +21,6 @@ function Register() {
         nombre,
         apellido,
         email,
-        password,
       };
       if (newUser && user) {
         addDocument("user", newUser);
