@@ -49,7 +49,7 @@ const MyProfile = () => {
           <Modal isOpen={isModalOpen} onClose={closeModal}>
             <EditProfile user={userData}/>
           </Modal >
-          <MakePost userId={userData}/>
+          {userData ? <MakePost userId={userData.id}/> : "Loading data"}
         </div>
         <div className="pf-cont row-span-5 col-start-5">3</div>
       </div>

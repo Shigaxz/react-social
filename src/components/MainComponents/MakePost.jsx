@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { uploadPost } from "../../firebase/firebaseFunctions";
 import "./MakePost.css";
-export default function MakePost({ userData }) {
+export default function MakePost({ userId }) {
   const [postText, setPostText] = useState("");
   const [photo, setPhoto] = useState(null);
   const [error, setError] = useState(null);
@@ -14,8 +14,6 @@ export default function MakePost({ userData }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-    console.log(userData);
-      const userId = userData.id;
       await uploadPost(userId, postText, photo);
       setSuccess(true);
       setPostText("");
@@ -28,7 +26,7 @@ export default function MakePost({ userData }) {
   return (
     <div className="makepost">
       <form
-        className="bg-black p-6 rounded shadow-md  mx-auto mt-8 w-full"
+        className="p-6 rounded shadow-md  mx-auto mt-8 w-full"
         onSubmit={handleSubmit}
       >
         <h2 className="text-2xl font-semibold mb-4">Crear Post</h2>
@@ -55,10 +53,10 @@ export default function MakePost({ userData }) {
           Publicar
         </button>
         {success && (
-          <p className="mt-4 text-green-500">¡Post publicado con éxito!</p>
+          <p className="mt-4 text-green-500">Has generado una publicacion exitosamente.</p>
         )}
         {error && (
-          <p className="mt-4 text-red-500">Error al publicar: {error}</p>
+          <p className="mt-4 text-red-500">Ha ocurrido un error inesperado... Lo sentimos</p>
         )}
       </form>
     </div>
