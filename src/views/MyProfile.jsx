@@ -6,6 +6,7 @@ import Modal from "../Modal";
 import EditProfile from "../components/EditProfile";
 import Navbar from "../components/Navbar";
 import Profile from "../components/MainComponents/Profile";
+import UserPost from "../components/MainComponents/UserPost";
 import "./MyProfile.css";
 
 const MyProfile = () => {
@@ -50,6 +51,7 @@ const MyProfile = () => {
             <EditProfile user={userData}/>
           </Modal >
           {userData ? <MakePost userId={userData.id}/> : "Loading data"}
+          {userData ? <UserPost user={userData} /> : "Loading data"}
         </div>
         <div className="pf-cont row-span-5 col-start-5">3</div>
       </div>

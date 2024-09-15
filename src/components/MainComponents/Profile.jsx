@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./Profile.css";
+
 function Profile({ user }) {
   if (!user) {
     return <h1>No user data available</h1>;
@@ -26,14 +26,16 @@ function Profile({ user }) {
           "User doesn't have a photo"
         )}
       </div>
-      <div className="datos justify-center items-center">
-        <h1 className="text-lg">{user.nombre + " " + user.apellido}</h1>
+      <div className="datos flex items-center justify-start">
+        <div className="text-left">    
+        <h1 className="text-lg font-semibold">{user.nombre + " " + user.apellido}</h1>
 
         {user.biography ? (
-          <p className="text-base">{user.biography}</p>
+          <p className="text-base ">{user.biography}</p>
         ) : (
           "User doesn't have a biography"
         )}
+        </div>
       </div>
     </section>
   );

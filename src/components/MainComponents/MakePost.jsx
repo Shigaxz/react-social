@@ -25,10 +25,7 @@ export default function MakePost({ userId }) {
 
   return (
     <div className="makepost">
-      <form
-        className="p-6 rounded shadow-md  mx-auto mt-8 w-full"
-        onSubmit={handleSubmit}
-      >
+      <form className="p-6 mx-auto mt-8 w-full" onSubmit={handleSubmit}>
         <h2 className="text-2xl font-semibold mb-4">Crear Post</h2>
         <textarea
           className="w-full h-32 p-2 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -43,7 +40,7 @@ export default function MakePost({ userId }) {
             type="file"
             accept="image/*"
             onChange={handlePhotoChange}
-            className="w-full text-gray-700"
+            className="w-full"
           />
         </label>
         <button
@@ -53,10 +50,14 @@ export default function MakePost({ userId }) {
           Publicar
         </button>
         {success && (
-          <p className="mt-4 text-green-500">Has generado una publicacion exitosamente.</p>
+          <p className="mt-4 text-green-500">
+            Has generado una publicacion exitosamente.
+          </p>
         )}
         {error && (
-          <p className="mt-4 text-red-500">Ha ocurrido un error inesperado... Lo sentimos</p>
+          <p className="mt-4 text-red-500">
+            Ha ocurrido un error inesperado... Lo sentimos
+          </p>
         )}
       </form>
     </div>

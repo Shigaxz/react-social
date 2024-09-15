@@ -73,8 +73,8 @@ export const getUserByEmail = async (email) => {
     });
 
     return userData;
-  } catch (error) {
-    console.error("Error obteniendo usuario por email: ", error);
+  } catch (e) {
+    console.error("Error obteniendo usuario por email: ", e);
     return null;
   }
 };
@@ -101,9 +101,9 @@ export const editProfilePhoto = async (userId, updatedData, file) => {
       await updateDoc(userDocRef, updatedData);
     }
     */
-  } catch (error) {
-    console.error("Error al actualizar el usuario:", error);
-    throw error;
+  } catch (e) {
+    console.error("Error al actualizar el usuario:", e);
+    throw e;
   }
 };
 
@@ -112,9 +112,9 @@ export const editProfile = async (userId, updatedData) => {
     const userDocRef = doc(db, 'user', userId);
     await updateDoc(userDocRef, updatedData);
     
-  } catch (error) {
-    console.error("Error al actualizar los datos del perfil:", error);
-    throw error;
+  } catch (e) {
+    console.error("Error al actualizar los datos del perfil:", e);
+    throw e;
   }
 };
 
@@ -137,8 +137,26 @@ export const uploadPost = async (userId, postText, photo) => {
       photo: photoURL,
       createdAt: formattedDate,
     });
-  } catch (error) {
-    console.error("Error al subir el post con foto:", error);
-    throw error;
+  } catch (e) {
+    console.error("Error al subir el post con foto:", e);
+    throw e;
+  }
+};
+
+export const getPostsById = async (userId) => {
+  try {
+    const postsCollection = collection(db, "posts");
+    const q = query(postsCollection, where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    
+    const posts = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return posts;
+  } catch (e) {
+    console.error("Error obteniendo los posts:", e);
+    throw e;
   }
 };
