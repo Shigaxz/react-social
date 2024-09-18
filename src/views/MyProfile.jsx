@@ -43,8 +43,8 @@ const MyProfile = () => {
       <Navbar />
 
       <div className="grid grid-cols-5 grid-rows-5 gap-4 mt-3 ml-3 mr-3">
-        <div className="pf-cont row-span-5">1</div>
-        <div className="pf-cont col-span-3 row-span-5">
+        <div className="pf-cont row-span-5 hidden lg:block">1</div>
+        <div className="principal pf-cont col-span-5 lg:col-span-3 row-span-5">
           <Profile user={userData}/>
           <button className="edit ml-9 p-1" onClick={openModal}>Editar Perfil</button>
           <Modal isOpen={isModalOpen} onClose={closeModal}>
@@ -53,7 +53,7 @@ const MyProfile = () => {
           {userData ? <MakePost userId={userData.id}/> : "Loading data"}
           {userData ? <UserPost user={userData} /> : "Loading data"}
         </div>
-        <div className="pf-cont row-span-5 col-start-5">3</div>
+        <div className="pf-cont row-span-5 col-start-5 hidden lg:block">3</div>
       </div>
     </>
   );

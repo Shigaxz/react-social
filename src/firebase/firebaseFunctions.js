@@ -1,4 +1,4 @@
-import { collection, addDoc, doc, updateDoc, deleteDoc, getDocs, getDoc, getFirestore, query, where } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, deleteDoc, getDocs, getDoc, getFirestore, query, where, arrayUnion, arrayRemove, increment, Timestamp } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './firebaseConfig';
 
@@ -136,6 +136,8 @@ export const uploadPost = async (userId, postText, photo) => {
       text: postText,
       photo: photoURL,
       createdAt: formattedDate,
+      likesCount: 0,
+      likedBy: []
     });
   } catch (e) {
     console.error("Error al subir el post con foto:", e);
@@ -157,6 +159,97 @@ export const getPostsById = async (userId) => {
     return posts;
   } catch (e) {
     console.error("Error obteniendo los posts:", e);
+    throw e;
+  }
+};
+
+export const likePost = async (postId, userId) => {
+  try {
+    const postRef = doc(db, "posts", postId);
+    const postSnapshot = await getDoc(postRef);
+
+    if (postSnapshot.exists()) {
+      const postData = postSnapshot.data();
+      // Verifica si el usuario ya ha dado "like"
+      if (!postData.likedBy.includes(userId)) {
+        await updateDoc(postRef, {
+          likedBy: arrayUnion(userId),
+          likesCount: increment(1)
+        });
+      } else {
+        console.log("El usuario ya dio like a este post.");
+      }
+    } else {
+      console.log("El post no existe.");
+    }
+  } catch (error) {
+    console.error("Error al dar like:", error);
+    throw error;
+  }
+};
+
+export const unlikePost = async (postId, userId) => {
+  try {
+    const postRef = doc(db, "posts", postId);
+    await updateDoc(postRef, {
+      likedBy: arrayRemove(userId),
+      likesCount: increment(-1)
+    });
+  } catch (e) {
+    console.error("error:", e);
+  }
+};
+
+export const addComment = async (postId, userId, comment, file = null) => {
+  try {
+    let photoURL = null;
+
+    if (file) {
+      const storageRef = ref(storage, `comments/${file.name}`);
+      await uploadBytes(storageRef, file);
+      photoURL = await getDownloadURL(storageRef);
+    }
+    const newComment = {
+      userId,
+      postId,
+      comment,
+      photoURL,
+      createdAt: Timestamp.now()
+    };
+
+    const postRef = doc(db, "posts", postId);
+    await addDoc(collection(postRef, "comments"), newComment);
+
+    return newComment;
+  } catch (error) {
+    console.error("Error al añadir comentario");
+    throw error;
+  }
+};
+
+export const getPostComments = async (postId) => {
+  const postRef = doc(db, "posts", postId);
+  const commentsRef = collection(postRef, "comments");
+  const querySnapshot = await getDocs(commentsRef);
+
+  const comments = [];
+  querySnapshot.forEach((doc) => {
+    comments.push({ id: doc.id, ...doc.data() });
+  });
+
+  return comments;
+};
+
+export const getUserById = async (userId) => {
+  try {
+    const userDocRef = doc(db, 'user', userId);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      return userDoc.data();
+    }
+    throw new Error('Usuario no encontrado');
+  } catch (e) {
+    console.error(`Error al obtener datos del usuario ${userId}:`, e);
     throw e;
   }
 };

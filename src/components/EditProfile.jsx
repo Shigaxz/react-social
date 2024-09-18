@@ -32,7 +32,7 @@ function EditProfile({ user }) {
   };
 
   return (
-    <form className="edit-profile" onSubmit={handleSubmit}>
+    <form className="edit-profile bg-black" onSubmit={handleSubmit}>
         <h1>Editar Perfil</h1>
       <label>
         Nombre:
