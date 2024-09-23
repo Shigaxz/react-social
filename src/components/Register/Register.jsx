@@ -17,10 +17,12 @@ function Register() {
     e.preventDefault();
     try {
       const user = await registerUser(email, password);
+      const photoURL = "/default-user.jpg";
       const newUser = {
         nombre,
         apellido,
         email,
+        photoURL
       };
       if (newUser && user) {
         addDocument("user", newUser);

@@ -1,68 +1,86 @@
-import { collection, addDoc, doc, updateDoc, deleteDoc, getDocs, getDoc, getFirestore, query, where, arrayUnion, arrayRemove, increment, Timestamp } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from './firebaseConfig';
+import {
+  collection,
+  addDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+  getDocs,
+  getDoc,
+  getFirestore,
+  query,
+  where,
+  arrayUnion,
+  arrayRemove,
+  increment,
+  Timestamp,
+} from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "./firebaseConfig";
 
 export const addDocument = async (collectionName, data) => {
-    try {
-      const docRef = await addDoc(collection(db, collectionName), data);
-      return { id: docRef.id, ...data };
-    } catch (e) {
-        console.error("error: ", e);
-      throw e;
-    }
+  try {
+    const docRef = await addDoc(collection(db, collectionName), data);
+    return { id: docRef.id, ...data };
+  } catch (e) {
+    console.error("error: ", e);
+    throw e;
+  }
 };
 
 export const updateDocument = async (collectionName, id, data) => {
-    try {
-      const docRef = doc(db, collectionName, id);
-      await updateDoc(docRef, data);
-      return { id, ...data };
-    } catch (e) {
-        console.error("error: ", e);
-      throw e;
-    }
+  try {
+    const docRef = doc(db, collectionName, id);
+    await updateDoc(docRef, data);
+    return { id, ...data };
+  } catch (e) {
+    console.error("error: ", e);
+    throw e;
+  }
 };
 
 export const deleteDocument = async (collectionName, id) => {
-    try {
-      const docRef = doc(db, collectionName, id);
-      await deleteDoc(docRef);
-      return { id };
-    } catch (e) {
-        console.error("error: ", e);
-      throw e;
-    }
+  try {
+    const docRef = doc(db, collectionName, id);
+    await deleteDoc(docRef);
+    return { id };
+  } catch (e) {
+    console.error("error: ", e);
+    throw e;
+  }
 };
 
 export const getCollection = async (collectionName) => {
-    try {
-      const querySnapshot = await getDocs(collection(db, collectionName));
-      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      return data;
-    } catch (e) {
-        console.error("error: ", e);
-      throw e;
-    }
+  try {
+    const querySnapshot = await getDocs(collection(db, collectionName));
+    const data = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return data;
+  } catch (e) {
+    console.error("error: ", e);
+    throw e;
+  }
 };
 
 export const getDocumentById = async (collectionName, id) => {
-    try {
-      const docRef = doc(db, collectionName, id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() };
-      } else {
-        throw new Error("No such document!");
-      }
-    } catch (e) {
-      console.error("error: ", e);
-      throw e;
+  try {
+    const docRef = doc(db, collectionName, id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() };
+    } else {
+      throw new Error("No such document!");
     }
+  } catch (e) {
+    console.error("error: ", e);
+    throw e;
+  }
 };
 
 export const getUserByEmail = async (email) => {
-  const usersRef = collection(db, 'user');
-  const q = query(usersRef, where('email', '==', email));
+  const usersRef = collection(db, "user");
+  const q = query(usersRef, where("email", "==", email));
 
   try {
     const querySnapshot = await getDocs(q);
@@ -81,7 +99,7 @@ export const getUserByEmail = async (email) => {
 
 export const editProfilePhoto = async (userId, updatedData, file) => {
   try {
-    const userDocRef = doc(db, 'user', userId);
+    const userDocRef = doc(db, "user", userId);
 
     let photoURL = null;
     // Si no se actualiza la foto recibe un null
@@ -109,9 +127,8 @@ export const editProfilePhoto = async (userId, updatedData, file) => {
 
 export const editProfile = async (userId, updatedData) => {
   try {
-    const userDocRef = doc(db, 'user', userId);
+    const userDocRef = doc(db, "user", userId);
     await updateDoc(userDocRef, updatedData);
-    
   } catch (e) {
     console.error("Error al actualizar los datos del perfil:", e);
     throw e;
@@ -128,16 +145,16 @@ export const uploadPost = async (userId, postText, photo) => {
       photoURL = await getDownloadURL(storageRef);
     }
     const postDay = new Date();
-    const formattedDate = postDay.toISOString().split('T')[0];
+    const formattedDate = postDay.toISOString().split("T")[0];
 
-    const postRef = collection(db, 'posts');
+    const postRef = collection(db, "posts");
     await addDoc(postRef, {
       userId,
       text: postText,
       photo: photoURL,
       createdAt: formattedDate,
       likesCount: 0,
-      likedBy: []
+      likedBy: [],
     });
   } catch (e) {
     console.error("Error al subir el post con foto:", e);
@@ -150,8 +167,8 @@ export const getPostsById = async (userId) => {
     const postsCollection = collection(db, "posts");
     const q = query(postsCollection, where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
-    
-    const posts = querySnapshot.docs.map(doc => ({
+
+    const posts = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
@@ -174,7 +191,7 @@ export const likePost = async (postId, userId) => {
       if (!postData.likedBy.includes(userId)) {
         await updateDoc(postRef, {
           likedBy: arrayUnion(userId),
-          likesCount: increment(1)
+          likesCount: increment(1),
         });
       } else {
         console.log("El usuario ya dio like a este post.");
@@ -193,7 +210,7 @@ export const unlikePost = async (postId, userId) => {
     const postRef = doc(db, "posts", postId);
     await updateDoc(postRef, {
       likedBy: arrayRemove(userId),
-      likesCount: increment(-1)
+      likesCount: increment(-1),
     });
   } catch (e) {
     console.error("error:", e);
@@ -214,7 +231,7 @@ export const addComment = async (postId, userId, comment, file = null) => {
       postId,
       comment,
       photoURL,
-      createdAt: Timestamp.now()
+      createdAt: Timestamp.now(),
     };
 
     const postRef = doc(db, "posts", postId);
@@ -242,14 +259,118 @@ export const getPostComments = async (postId) => {
 
 export const getUserById = async (userId) => {
   try {
-    const userDocRef = doc(db, 'user', userId);
+    const userDocRef = doc(db, "user", userId);
     const userDoc = await getDoc(userDocRef);
     if (userDoc.exists()) {
       return userDoc.data();
     }
-    throw new Error('Usuario no encontrado');
+    throw new Error("Usuario no encontrado");
   } catch (e) {
     console.error(`Error al obtener datos del usuario ${userId}:`, e);
+    throw e;
+  }
+};
+
+export const getUserFriends = async (userId) => {
+  try {
+    const userDocRef = doc(db, "user", userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists) {
+      throw new Error("Usuario no encontrado");
+    }
+
+    const userData = userDoc.data();
+    const friendsIds = userData.friendList || [];
+
+    const friendsList = [];
+    for (let friendId of friendsIds) {
+      const friendDocRef = doc(db, "user", friendId);
+      const friendDoc = await getDoc(friendDocRef);
+      if (friendDoc.exists) {
+        friendsList.push(friendDoc.data());
+      }
+    }
+    return friendsList;
+  } catch (e) {
+    console.error("Error al obtener data de lista de amigos", e);
+    throw e;
+  }
+};
+export const searchUsers = async (searchTerm) => {
+  // PQ FIREBASE NO TIENE PARA HACER QUERYS QUE RETORNEN MAYUSCULAS O CON ACENTOS D:
+  try {
+    const q = query(
+      collection(db, "user"),
+      where("nombre", ">=", searchTerm),
+      where("nombre", "<=", searchTerm + "\uf8ff")
+    );
+    
+
+    const querySnapshot = await getDocs(q);
+      const users = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    if (users.length === 0) {
+      return null;
+    } else {
+      return users;
+    }
+  } catch (e) {
+    console.error("Ocurrio un error buscando users:", e);
+  }
+};
+
+export const sendFriendRequest = async (senderId, receiverId) => {
+  // FUNCION REVISA QUE NO EXISTA UNA SOLICITUD CON LAS IDS RECIBIDAS
+  try {
+    const q = query(
+      collection(db, "friendRequests"),
+      where("senderId", "==", senderId),
+      where("receiverId", "==", receiverId),
+      where("accepted", "==", null)
+    );
+
+    const qs = query(
+      collection(db, "friendRequests"),
+      where("senderId", "==", receiverId),
+      where("receiverId", "==", senderId),
+      where("accepted", "==", null)
+    );
+    const querySnapshot = await getDocs(q);
+    const querySnapshot2 = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      console.error("Ya existe una solicitud pendiente.");
+      return null;
+    }
+    if (!querySnapshot2.empty) {
+      console.error("Ya existe una solicitud pendiente.");
+      return null;
+    }
+    const docRef = await addDoc(collection(db, "friendRequests"), {
+      senderId: senderId,
+      receiverId: receiverId,
+      date: Timestamp.now(),
+      accepted: null,
+    });
+    
+    return docRef.id;
+  } catch (e) {
+    console.error("Error al enviar la solicitud:", e);
+    return e;
+  }
+};
+
+export const respondFriendRequest = async (requestId, accepted) => {
+  try {
+    const requestRef = doc(db, "friendRequests", requestId);
+    await updateDoc(requestRef, {
+      accepted: accepted,
+    });
+  } catch (e) {
+    console.error("Error interactuar con la solicitud: ", e);
     throw e;
   }
 };

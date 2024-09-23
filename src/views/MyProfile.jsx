@@ -7,6 +7,7 @@ import EditProfile from "../components/EditProfile";
 import Navbar from "../components/Navbar";
 import Profile from "../components/MainComponents/Profile";
 import UserPost from "../components/MainComponents/UserPost";
+import FriendsComponent from "../components/MainComponents/FriendsComponent";
 import "./MyProfile.css";
 
 const MyProfile = () => {
@@ -53,7 +54,9 @@ const MyProfile = () => {
           {userData ? <MakePost userId={userData.id}/> : "Loading data"}
           {userData ? <UserPost user={userData} /> : "Loading data"}
         </div>
-        <div className="pf-cont row-span-5 col-start-5 hidden lg:block">3</div>
+        <div className="pf-cont row-span-5 col-start-5 hidden lg:block">
+          <FriendsComponent user={userData}/>
+        </div>
       </div>
     </>
   );

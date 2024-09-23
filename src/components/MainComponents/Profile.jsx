@@ -23,7 +23,11 @@ function Profile({ user }) {
             alt="User Profile"
           />
         ) : (
-          "User doesn't have a photo"
+          <img
+            className="size-36 rounded-full m-3"
+            src="/default-user.jpg"
+            alt="User Profile"
+          />
         )}
       </div>
       <div className="datos flex items-center justify-start">
@@ -33,7 +37,7 @@ function Profile({ user }) {
         {user.biography ? (
           <p className="text-base ">{user.biography}</p>
         ) : (
-          "User doesn't have a biography"
+          ""
         )}
         </div>
       </div>
