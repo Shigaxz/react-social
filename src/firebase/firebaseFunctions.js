@@ -23,7 +23,6 @@ export const addDocument = async (collectionName, data) => {
     return { id: docRef.id, ...data };
   } catch (e) {
     console.error("error: ", e);
-    throw e;
   }
 };
 
@@ -34,7 +33,6 @@ export const updateDocument = async (collectionName, id, data) => {
     return { id, ...data };
   } catch (e) {
     console.error("error: ", e);
-    throw e;
   }
 };
 
@@ -45,7 +43,6 @@ export const deleteDocument = async (collectionName, id) => {
     return { id };
   } catch (e) {
     console.error("error: ", e);
-    throw e;
   }
 };
 
@@ -59,7 +56,6 @@ export const getCollection = async (collectionName) => {
     return data;
   } catch (e) {
     console.error("error: ", e);
-    throw e;
   }
 };
 
@@ -74,7 +70,6 @@ export const getDocumentById = async (collectionName, id) => {
     }
   } catch (e) {
     console.error("error: ", e);
-    throw e;
   }
 };
 
@@ -121,7 +116,6 @@ export const editProfilePhoto = async (userId, updatedData, file) => {
     */
   } catch (e) {
     console.error("Error al actualizar el usuario:", e);
-    throw e;
   }
 };
 
@@ -131,7 +125,6 @@ export const editProfile = async (userId, updatedData) => {
     await updateDoc(userDocRef, updatedData);
   } catch (e) {
     console.error("Error al actualizar los datos del perfil:", e);
-    throw e;
   }
 };
 
@@ -158,7 +151,6 @@ export const uploadPost = async (userId, postText, photo) => {
     });
   } catch (e) {
     console.error("Error al subir el post con foto:", e);
-    throw e;
   }
 };
 
@@ -176,7 +168,6 @@ export const getPostsById = async (userId) => {
     return posts;
   } catch (e) {
     console.error("Error obteniendo los posts:", e);
-    throw e;
   }
 };
 
@@ -201,7 +192,6 @@ export const likePost = async (postId, userId) => {
     }
   } catch (error) {
     console.error("Error al dar like:", error);
-    throw error;
   }
 };
 
@@ -240,21 +230,24 @@ export const addComment = async (postId, userId, comment, file = null) => {
     return newComment;
   } catch (error) {
     console.error("Error al añadir comentario");
-    throw error;
   }
 };
 
 export const getPostComments = async (postId) => {
-  const postRef = doc(db, "posts", postId);
-  const commentsRef = collection(postRef, "comments");
-  const querySnapshot = await getDocs(commentsRef);
+  try {
+    const postRef = doc(db, "posts", postId);
+    const commentsRef = collection(postRef, "comments");
+    const querySnapshot = await getDocs(commentsRef);
 
-  const comments = [];
-  querySnapshot.forEach((doc) => {
-    comments.push({ id: doc.id, ...doc.data() });
-  });
+    const comments = [];
+    querySnapshot.forEach((doc) => {
+      comments.push({ id: doc.id, ...doc.data() });
+    });
 
-  return comments;
+    return comments;
+  } catch (e) {
+    console.error("Erro obteniendo los comentarios", e);
+  }
 };
 
 export const getUserById = async (userId) => {
@@ -267,7 +260,6 @@ export const getUserById = async (userId) => {
     throw new Error("Usuario no encontrado");
   } catch (e) {
     console.error(`Error al obtener datos del usuario ${userId}:`, e);
-    throw e;
   }
 };
 
@@ -294,7 +286,6 @@ export const getUserFriends = async (userId) => {
     return friendsList;
   } catch (e) {
     console.error("Error al obtener data de lista de amigos", e);
-    throw e;
   }
 };
 export const searchUsers = async (searchTerm) => {
@@ -305,13 +296,12 @@ export const searchUsers = async (searchTerm) => {
       where("nombre", ">=", searchTerm),
       where("nombre", "<=", searchTerm + "\uf8ff")
     );
-    
 
     const querySnapshot = await getDocs(q);
-      const users = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+    const users = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
     if (users.length === 0) {
       return null;
     } else {
@@ -355,7 +345,7 @@ export const sendFriendRequest = async (senderId, receiverId) => {
       date: Timestamp.now(),
       accepted: null,
     });
-    
+
     return docRef.id;
   } catch (e) {
     console.error("Error al enviar la solicitud:", e);
@@ -363,14 +353,43 @@ export const sendFriendRequest = async (senderId, receiverId) => {
   }
 };
 
-export const respondFriendRequest = async (requestId, accepted) => {
+export const getFriendRequests = async (receiverId) => {
   try {
-    const requestRef = doc(db, "friendRequests", requestId);
-    await updateDoc(requestRef, {
-      accepted: accepted,
-    });
-  } catch (e) {
-    console.error("Error interactuar con la solicitud: ", e);
-    throw e;
+    const q = query(
+      collection(db, "friendRequests"),
+      where("receiverId", "==", receiverId),
+      where("accepted", "==", null)
+    );
+
+    const querySnapshot = await getDocs(q);
+    const friendRequests = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return friendRequests;
+  } catch (error) {
+    console.error("Error obteniendo solicitudes de amistad:", error);
+    return [];
   }
+};
+
+export const respondFriendRequest = async (request) => {
+  try {
+    const requestRef = doc(db, "friendRequests", request.id);
+    await updateDoc(requestRef, request);
+
+    if (request.accepted) {
+      // Si es true se agregan a la user.friendList
+      const senderRef = doc(db, "user", request.senderId);
+      const receiverRef = doc(db, "user", request.receiverId);
+      await updateDoc(senderRef, {
+        friendList: arrayUnion(request.receiverId)
+      });
+      await updateDoc(receiverRef, {
+        friendList: arrayUnion(request.senderId)
+      });
+    }
+  } catch (e) {
+    console.error(e)
+  };
 };
