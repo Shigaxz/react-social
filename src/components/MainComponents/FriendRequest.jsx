@@ -83,7 +83,7 @@ const FriendRequest = ({ userId }) => {
           ))}
         </ul>
       ) : (
-        <p>No tienes solicitudes de amistad pendientes.</p>
+        <p className="text-center">No tienes solicitudes de amistad pendientes.</p>
       )}
     </div>
   );

@@ -13,6 +13,9 @@ import {
   arrayRemove,
   increment,
   Timestamp,
+  orderBy,
+  startAfter,
+  limit
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "./firebaseConfig";
@@ -349,7 +352,6 @@ export const sendFriendRequest = async (senderId, receiverId) => {
     return docRef.id;
   } catch (e) {
     console.error("Error al enviar la solicitud:", e);
-    return e;
   }
 };
 
@@ -367,8 +369,8 @@ export const getFriendRequests = async (receiverId) => {
       ...doc.data(),
     }));
     return friendRequests;
-  } catch (error) {
-    console.error("Error obteniendo solicitudes de amistad:", error);
+  } catch (e) {
+    console.error("Error obteniendo solicitudes de amistad:", e);
     return [];
   }
 };
@@ -390,6 +392,33 @@ export const respondFriendRequest = async (request) => {
       });
     }
   } catch (e) {
-    console.error(e)
+    console.error("Error al responder la solicitud", e)
   };
+};
+
+//FUNCION PARA OBTENER CADA 10 POST PARA SER USADA EN EL INDEX
+export const getPostsWithLimitById = async (userIds, lastVisible, postLimit = 1) => {
+  try {
+    let q = query(
+      collection(db, "posts"),
+      where("userId", "in", userIds), // Busca posts de amigos
+      orderBy("createdAt", "desc"),
+      limit(postLimit)
+    );
+
+    if (lastVisible) {
+      q = query(q, startAfter(lastVisible));
+    }
+
+    const querySnapshot = await getDocs(q);
+    const posts = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+    return { posts, lastVisible: lastDoc };
+  } catch (e) {
+    console.error("Error obteniendo los posts", e);
+  }
 };

@@ -1,37 +1,70 @@
 import React, { useEffect, useState } from "react";
 import {
-  getPostsById,
+  getPostsWithLimitById,
   likePost,
   unlikePost,
 } from "../../firebase/firebaseFunctions";
 import Modal from "../../Modal";
 import Post from "./Post";
-const UserPost = ({ user }) => {
+
+const LoadPosts = ({ user }) => {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [lastVisible, setLastVisible] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [likeCd, setLikeCd] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const userPosts = await getPostsById(user.id);
-        const postSortedByDate = userPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setPosts(postSortedByDate);
+        setLoading(true);
+        const { posts: newPosts, lastVisible: newLastVisible } =
+          await getPostsWithLimitById(user.friendList, lastVisible);
+          setPosts((prevPosts) => {
+            const combinedPosts = [...prevPosts, ...newPosts];
+            const uniquePosts = Array.from(
+              new Map(combinedPosts.map((post) => [post.id, post])).values()
+            );
+    
+            return uniquePosts;
+          });
+        setLastVisible(newLastVisible);
         setLoading(false);
       } catch (e) {
-        console.error("Error obteniendo los posts");
-        setError("Error obteniendo los posts");
+        console.error("Ocurrio un error inesperado al obtener los posts");
         setLoading(false);
       }
     };
 
-    if (user.id) {
+    if (user.friendList.length > 0 && !loading) {
       fetchPosts();
     }
-  }, [user.id]);
+
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 500 &&
+        !loading
+      ) {
+        fetchPosts();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [user.friendList, lastVisible]);
+  
+  const removePostDuplicated = (posts) => {
+    const newPosts = new Set();
+    
+    return posts.filter((item) => {
+      const duplicatedPosts = newPosts.has(item.id);
+      newPosts.add(item.id);
+      return !duplicatedPosts;
+    });
+  };
 
   const handleLike = async (post) => {
     if (likeCd) return;
@@ -84,14 +117,14 @@ const UserPost = ({ user }) => {
     setIsModalOpen(false);
   };
 
-  if (loading) return <p>Cargando posts...</p>;
-  if (error) return <p>{error}</p>;
-
   return (
-    <div className="user-posts p-6 mx-auto w-full">
-      <h2 className="text-2xl font-semibold mb-4">Posts</h2>
-      {posts.length > 0 ? (
-        posts.map((post) => (
+    <div>
+      <h1 className="text-2xl font-semibold ml-6 pt-6">
+        No te pierdas las ultimas novedades...
+      </h1>
+      <div className="p-6 mx-auto w-full">
+      {removePostDuplicated(posts) && posts.map((post) => (
+        <div key={post.id}>
           <div className="post border border-white rounded mb-2 p-3">
             <div className="flex items-center justify-start">
               <img className="size-11 rounded-full" src={user.photoURL} />
@@ -164,12 +197,11 @@ const UserPost = ({ user }) => {
               )}
             </div>
           </div>
-        ))
-      ) : (
-        <p>No hay posts.</p>
-      )}
+        </div>
+      ))}
+      </div>
     </div>
   );
 };
 
-export default UserPost;
+export default LoadPosts;

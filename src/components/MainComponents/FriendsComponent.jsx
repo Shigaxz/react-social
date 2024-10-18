@@ -88,7 +88,7 @@ const FriendsComponent = ({ user }) => {
       {isVisible && <FriendSearch friends={friends} />}
       {isVisibleAdd && <FriendAdd user={user} />}
       {isVisibleReq && <FriendRequest userId={user.id} />}
-      <div>
+      <div className="mt-2">
         <ul>
           {friends.length > 0 ? (
             friends.map((friend) => (
