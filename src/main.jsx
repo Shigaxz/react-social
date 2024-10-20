@@ -3,10 +3,11 @@ import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { AuthProvider } from './components/AuthContext.jsx'
 import Index from './views/Index.jsx'
-import App from './App.jsx'
 import Register from './views/Register.jsx'
 import MyProfile from './views/MyProfile.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import { getCollection } from './firebase/firebaseFunctions.js'
+import UserProfile from './views/UserProfile.jsx'
 import './index.css'
 
 
@@ -24,6 +25,14 @@ const rutas = [
     element: <ProtectedRoute element={<MyProfile />} />
   }
 ];
+const UserRoutes = async () => {
+  const users = await getCollection('user');
+  const usersRoutes = users.map(user => ({
+    path: `/profile/${user.id}`,
+    element: <UserProfile user={user} />
+  }));
+  rutas.push(usersRoutes);
+};
 
 const router = createBrowserRouter(rutas);
 
