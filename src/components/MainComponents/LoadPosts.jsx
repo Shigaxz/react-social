@@ -43,6 +43,7 @@ const LoadPosts = ({ user }) => {
       (entries) => {
         if (entries[0].isIntersecting) {
           console.log("observer")
+          // si funciona pero al no tener más post que cargar se llama la funcion fetchPosts() constantemente consumiendo recursos de Firebase
           fetchPosts();
         }
       },
