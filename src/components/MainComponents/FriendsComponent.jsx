@@ -9,7 +9,9 @@ const FriendsComponent = ({ user }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isVisibleAdd, setIsVisibleAdd] = useState(false);
   const [isVisibleReq, setIsVisibleReq] = useState(false);
+
   useEffect(() => {
+    console.log(user)
     const fetchFriends = async () => {
       try {
         const friendsList = await getUserFriends(user.id);

@@ -25,15 +25,21 @@ const rutas = [
     element: <ProtectedRoute element={<MyProfile />} />
   }
 ];
+
 const UserRoutes = async () => {
-  const users = await getCollection('user');
-  const usersRoutes = users.map(user => ({
-    path: `/profile/${user.id}`,
-    element: <UserProfile user={user} />
-  }));
-  rutas.push(usersRoutes);
+  try {
+    const users = await getCollection('user');
+    const usersRoutes = users.map(user => ({
+      path: `/profile/${user.id}`,
+      element: <UserProfile user={user} />
+    }));
+    rutas.push(...usersRoutes);
+  } catch (e) {
+    console.error("Error creando rutas de usuarios: ", e);
+  }
 };
 
+await UserRoutes();
 const router = createBrowserRouter(rutas);
 
 
