@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import Profile from "../components/MainComponents/Profile";
 import UserPost from "../components/MainComponents/UserPost";
 import FriendsComponent from "../components/MainComponents/FriendsComponent";
+import ProfileFriend from "../components/MainComponents/ProfileFriend";
 
 const UserProfile = ({ user }) => {
   const { currentUser } = useAuth();
@@ -30,29 +31,6 @@ const UserProfile = ({ user }) => {
   }, [currentUser]);
 
   //AGREGAR BOTON DE AGREGAR AMIGO / ELIMINAR
-  const FriendDetect = async () => {
-    const HandleClickAdd =  async () => {
-      try {
-        const res = await sendFriendRequest(userData.id, user.id);
-      } catch (e) {
-        console.error("Ocurrio un erro al enviar la solicitud de amistad", e);
-      }
-    }; 
-    if (userData.friendList.includes(user.id)) {
-      // SON AMIGOS
-      return (
-        <>
-        <button className="ml-9 p-1 border border-white rounded-lg" >Amigo/a</button>
-        </>
-      );
-    } else {
-      return (
-        <>
-        <button className="ml-9 p-1 border border-white rounded-lg" onClick={HandleClickAdd}>Agregar Amigo</button>
-        </>
-      );
-    }
-  };
 
   return (
     <>
@@ -61,8 +39,8 @@ const UserProfile = ({ user }) => {
         <div className="pf-cont row-span-5 hidden lg:block">1</div>
         <div className="principal pf-cont col-span-5 lg:col-span-3 row-span-5">
           <Profile user={user} />
+          {user && userData ? <ProfileFriend friendList={userData.friendList} userId={user.id} secondUserID={userData.id}/>: "ProfileFriend"}
           {user ? <UserPost user={user} /> : "Loading data"}
-          <FriendDetect />
         </div>
         <div className="pf-cont row-span-5 col-start-5 hidden lg:block">
           {userData ? <FriendsComponent user={userData}/> : "Loading data"}

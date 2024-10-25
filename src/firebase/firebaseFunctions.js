@@ -283,7 +283,7 @@ export const getUserFriends = async (userId) => {
       const friendDocRef = doc(db, "user", friendId);
       const friendDoc = await getDoc(friendDocRef);
       if (friendDoc.exists) {
-        friendsList.push(friendDoc.data());
+        friendsList.push({ id: friendDoc.id, ...friendDoc.data() });
       }
     }
     return friendsList;
@@ -291,6 +291,7 @@ export const getUserFriends = async (userId) => {
     console.error("Error al obtener data de lista de amigos", e);
   }
 };
+
 export const searchUsers = async (searchTerm) => {
   // PQ FIREBASE NO TIENE PARA HACER QUERYS QUE RETORNEN MAYUSCULAS O CON ACENTOS D:
   try {
