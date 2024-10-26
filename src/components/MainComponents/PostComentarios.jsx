@@ -24,17 +24,17 @@ const PostComentarios = ({ postId, userId }) => {
                 userNombre: user.nombre,
                 userPhotoURL: user.photoURL,
               };
-            } catch (error) {
+            } catch (e) {
               console.error(
                 `Error al obtener data del ${comment.userId}`,
-                error
+                e
               );
               return { ...comment };
             }
           })
         );
         setComments(commentsWithUserData);
-      } catch (error) {
+      } catch (e) {
         setError("Error al cargar comentarios.");
       }
     };

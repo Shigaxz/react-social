@@ -3,6 +3,7 @@ import {
   getPostsWithLimitById,
   likePost,
   unlikePost,
+  getUserById,
 } from "../../firebase/firebaseFunctions";
 import Modal from "../../Modal";
 import Post from "./Post";
@@ -22,16 +23,30 @@ const LoadPosts = ({ user }) => {
         setLoading(true);
         const { posts: newPosts, lastVisible: newLastVisible } =
           await getPostsWithLimitById(user.friendList, lastVisible);
-        setPosts((prevPosts) => {
-          const combinedPosts = [...prevPosts, ...newPosts];
-          const uniquePosts = Array.from(
-            new Map(combinedPosts.map((post) => [post.id, post])).values()
-          );
-
-          return uniquePosts;
-        });
+        const combinedPosts = [...posts, ...newPosts];
+        const uniquePosts = Array.from(
+          new Map(combinedPosts.map((post) => [post.id, post])).values()
+        );
+        const postsWithUserData = await Promise.all(
+          uniquePosts.map(async (post) => {
+            try {
+              const user = await getUserById(post.userId);
+              return {
+                ...post,
+                userNombre: user.nombre,
+                userPhotoURL: user.photoURL,
+              };
+            } catch (e) {
+              console.error(
+                `Error al obtener datos del usuario ${post.userId}`,
+                e
+              );
+              return post;
+            }
+          })
+        );
+        setPosts(postsWithUserData);
         setLastVisible(newLastVisible);
-        setLoading(false);
       } catch (e) {
         console.error("Ocurrio un error inesperado al obtener los posts");
         setLoading(false);
@@ -41,13 +56,13 @@ const LoadPosts = ({ user }) => {
     const observer = new IntersectionObserver(
       // uso de IntersectionObserver para hacer el InfiniteScrolling
       (entries) => {
-        if (entries[0].isIntersecting) {
-          console.log("observer")
+        if (entries[0].isIntersecting ) {
+          console.log("observer");
           // si funciona pero al no tener más post que cargar se llama la funcion fetchPosts() constantemente consumiendo recursos de Firebase
           fetchPosts();
         }
       },
-      { threshold: 1.0 } 
+      { threshold: 1.0 }
     );
 
     if (sentinelRef.current) {
@@ -59,7 +74,6 @@ const LoadPosts = ({ user }) => {
         observer.unobserve(sentinelRef.current);
       }
     };
-
   }, [user.friendList, lastVisible]);
 
   const removePostDuplicated = (posts) => {
@@ -134,8 +148,8 @@ const LoadPosts = ({ user }) => {
             <div key={post.id}>
               <div className="post border border-white rounded mb-2 p-3">
                 <div className="flex items-center justify-start">
-                  <img className="size-11 rounded-full" src={user.photoURL} />
-                  <h1 className="font-semibold ml-1.5">{user.nombre}</h1>
+                  <img className="size-11 rounded-full" src={post.userPhotoURL} />
+                  <h1 className="font-semibold ml-1.5">{post.userNombre}</h1>
                 </div>
                 <h1 className="text-xl">{post.text}</h1>
                 <h2 className="text-base text-stone-500">{post.createdAt}</h2>
