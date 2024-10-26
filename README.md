@@ -1,9 +1,9 @@
 # Social Media React + Vite
-Descripcion:
+- Descripcion:
 Red social, diseñada para continuar mi aprendizaje con JavaScript, al igual que aprender React.js junto con Tailwind CSS debido a que es mi primer projecto utilizandolo.
 La pagina cuenta con funcionalidades como: login, register, agregar y ver posts, likear posts, agregar y ver comentarios, añadir amigos, chatear con amigos.
 Actualmente se encuentra casi terminado el proyecto.
-Nota:
+- Nota:
 La aplicacion solo esta diseñada desde el Front End, y para Back end se utilizo Firebase que corresponde a un Backend as a Service(BaaS).
 - Tecnologías Utilizadas:
   - Lenguaje: JavaScript, React junto con Vite.
