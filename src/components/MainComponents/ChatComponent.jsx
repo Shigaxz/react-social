@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { getUserFriends } from "../../firebase/firebaseFunctions";
+import {
+  getUserFriends,
+  startChat,
+  sendMessage,
+  subscribeChatRoom
+} from "../../firebase/firebaseFunctions";
+
 const ChatComponent = ({ user }) => {
   const [friends, setFriends] = useState([]);
-  const [chatId, setChatId] = useState("");
+  const [friendChat, setFriendChat] = useState("");
+  const [chat, setChat] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -34,7 +41,7 @@ const ChatComponent = ({ user }) => {
                   alt={`${friend.nombre}'s profile`}
                 />
                 <span className="ml-1.5">{friend.nombre}</span>
-                <button onClick={() => setChatId(friend.id)}>
+                <button onClick={() => setFriendChat(friend)}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -56,14 +63,157 @@ const ChatComponent = ({ user }) => {
   };
 
   const ChatRoom = ({ member1, member2 }) => {
+    const [chatId, setChatId] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState("");
+    const [error, setError] = useState(false);
 
+    useEffect(() => {
+      const initiateChat = async () => {
+        try {
+          const id = await startChat(member1.id, member2.id);
+          if (id) {
+            setChatId(id);
+          }
+        } catch (e) {
+          setError(true);
+        }
+      };
+
+      const subscribeToChatRoom = (id) => {
+        return subscribeChatRoom(id, (messagesData) => {
+          setMessages(messagesData);
+        });
+      };
+
+      initiateChat();
+
+      let unsubscribe;
+      if (chatId) {
+        unsubscribe = subscribeToChatRoom(chatId);
+      }
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
+    }, [member1.id, member2.id, chatId]);
+
+    const closeChat = () => {
+      setFriendChat(null);
+    };
+
+    const handleSendMessage = async (e) => {
+      e.preventDefault();
+      if (newMessage.trim() === "") return;
+
+      try {
+        await sendMessage(chatId, user.id, newMessage);
+        setNewMessage("");
+      } catch (error) {
+        console.error("Error al enviar mensaje:", error);
+      }
+    };
+
+    const formatDate = (firebaseTimestamp) => {
+      const date = firebaseTimestamp.toDate();
+      return date.toLocaleDateString();
+    };
+
+    if (error) {
+      return (
+        <div>
+          <h1 className="text-xl font-semibold mt-4 text-center">
+            Error al iniciar el chat
+          </h1>
+        </div>
+      );
+    }
+
+    return chatId ? (
+      <div className="bg-black rounded-lg border border-white p-4 shadow m-2">
+        <div key={chatId} className="flex justify-between items-center">
+          <div className="flex items-center">
+            {member2.photoURL ? (
+              <img
+                className="rounded-full w-11 h-11 ml-3"
+                src={member2.photoURL}
+                alt={`${member2.nombre}'s profile`}
+              />
+            ) : (
+              ""
+            )}
+            <h1 className="text-xl font-semibold ml-2">
+              {member2.nombre}'s Chat
+            </h1>
+          </div>
+          <div>
+            <button onClick={() => setFriendChat(null)}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-6 h-6 mr-3"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div>
+        <div className="overflow-y-auto max-h-80 mb-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${
+              message.senderId === user.id ? "justify-end" : "justify-start"
+            } mt-2`}
+          >
+            <p
+              className={`${
+                message.senderId === user.id ? "bg-blue-500 text-white" : "bg-gray-300 text-black"
+              } rounded px-3 py-1`}
+            >
+              {message.message}
+            </p>
+            {/*<p>
+            {formatDate(message.timestamp)}
+            </p>*/}
+          </div>
+        ))}
+      </div>
+          <form onSubmit={handleSendMessage} className="flex mt-3">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Escribe un mensaje..."
+              className="border rounded-l px-4 py-2 w-full focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded-r"
+            >
+              Enviar
+            </button>
+          </form>
+        </div>
+      </div>
+    ) : (
+      <div>
+        <h1 className="text-xl font-semibold ml-4">Cargando chat...</h1>
+      </div>
+    );
   };
+
   return (
     <div>
       <h2 className="text-2xl font-semibold mt-4 text-center">Chat</h2>
       <div>
-        {friends ? <FriendList friends={friends} /> : "Loading Friends"}
-        {chatId ? <h1> Hola</h1> : <h1>Adios</h1>}
+        {friends && !friendChat ? <FriendList friends={friends} /> : ""}
+        {friendChat ? <ChatRoom member1={user} member2={friendChat} /> : ""}
       </div>
     </div>
   );

@@ -5,7 +5,8 @@ import MakePost from "../components/MainComponents/MakePost";
 import Modal from "../Modal";
 import Navbar from "../components/Navbar";
 import FriendsComponent from "../components/MainComponents/FriendsComponent";
-import LoadPosts from "../components/MainComponents/LoadPosts"
+import LoadPosts from "../components/MainComponents/LoadPosts";
+import ChatComponent from "../components/MainComponents/ChatComponent";
 import "./Index.css";
 const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,23 +35,30 @@ const Index = () => {
     setIsModalOpen(false);
   };
   if (!userData) {
-    return (<>
+    return (
+      <>
         <Navbar />
         <div className="flex items-center justify-center h-screen">
-
-        <div className="anyss">
-        <h1 className="text-2xl font-semibold">Por favor antes de ingresar, inicia sesion.</h1>
+          <div className="anyss">
+            <h1 className="text-2xl font-semibold">
+              Por favor antes de ingresar, inicia sesion.
+            </h1>
+          </div>
         </div>
-        </div>
-        </>);
+      </>
+    );
   }
   return (
     <>
       <Navbar />
       <div className="grid grid-cols-5 grid-rows-5 gap-4 mt-3 ml-3 mr-3">
-        <div className="pf-cont row-span-5 hidden lg:block">1</div>
+        <div className="pf-cont row-span-5 hidden lg:block">
+          {userData ? <ChatComponent user={userData} /> : "Loading Chat"}
+        </div>
         <div className="principal pf-cont col-span-5 lg:col-span-3 row-span-5">
-          <h1 className="text-2xl font-semibold ml-6 pt-6">Bienvenido de vuelta...</h1>
+          <h1 className="text-2xl font-semibold ml-6 pt-6">
+            Bienvenido de vuelta...
+          </h1>
           {userData ? <MakePost userId={userData.id} /> : "Loading data"}
           {userData ? <LoadPosts user={userData} /> : "Loading data"}
         </div>

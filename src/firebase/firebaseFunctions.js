@@ -6,6 +6,7 @@ import {
   deleteDoc,
   getDocs,
   getDoc,
+  setDoc,
   getFirestore,
   query,
   where,
@@ -15,7 +16,8 @@ import {
   Timestamp,
   orderBy,
   startAfter,
-  limit
+  limit,
+  onSnapshot
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "./firebaseConfig";
@@ -422,4 +424,48 @@ export const getPostsWithLimitById = async (userIds, lastVisible, postLimit = 1)
   } catch (e) {
     console.error("Error obteniendo los posts", e);
   }
+};
+
+export const startChat = async (user1Id, user2Id) => {
+  try {
+    const chatId = [user1Id, user2Id].sort().join("_");
+    // Junta las id´s para hacer el get
+    const chatRef = doc(db, "chatRoom", chatId);
+    const chatRoom = await getDoc(chatRef);
+    // Si no existe lo crea
+    if (!chatRoom.exists()) {
+      await setDoc(chatRef, {
+        user1: user1Id,
+        user2: user2Id,
+      });
+    }
+    return chatId;
+  } catch (e) {
+    console.error("Error al crear la sala de chat: ", e);
+  }
+};
+
+export const sendMessage = async (chatId, senderId, message) => {
+  try {
+    const messagesRef = collection(db, "chatRoom", chatId, "messages");
+    await addDoc(messagesRef, {
+      senderId,
+      message,
+      timestamp: Timestamp.now()
+    });
+  } catch (e) {
+    console.error("Error al enviar mensaje: ", e);
+  }
+};
+
+export const subscribeChatRoom = (chatId, callback) => {
+  const messagesRef = collection(db, "chatRoom", chatId, "messages");
+  const q = query(messagesRef, orderBy("timestamp", "asc"));
+  return onSnapshot(q, (snapshot) => {
+    const messagesData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    callback(messagesData);
+  });
 };

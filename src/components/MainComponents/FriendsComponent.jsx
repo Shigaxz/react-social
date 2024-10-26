@@ -11,7 +11,6 @@ const FriendsComponent = ({ user }) => {
   const [isVisibleReq, setIsVisibleReq] = useState(false);
 
   useEffect(() => {
-    console.log(user)
     const fetchFriends = async () => {
       try {
         const friendsList = await getUserFriends(user.id);
@@ -95,7 +94,7 @@ const FriendsComponent = ({ user }) => {
           {friends.length > 0 ? (
             friends.map((friend) => (
               <li
-                key={friend.userId}
+                key={friend.id}
                 className="friend-item flex items-center justify-start ml-1.5 mb-1.5"
               >
                 <img
